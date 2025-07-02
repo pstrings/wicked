@@ -27,6 +27,10 @@ class WickedSettings(commands.Cog):
         self.settings = load_settings()
 
     @app_commands.command(name="set_wicked_channel", description="Set the Wicked update channel and ping role.")
+    @app_commands.describe(
+        channel="The channel where updates will be posted", ping_role="The role to ping for updates")
+    @app_commands.guild_install()
+    @app_commands.guild_only()
     @is_admin()
     async def set_wicked_channel(self, interaction: discord.Interaction, channel: discord.TextChannel, ping_role: discord.Role):
         guild_id = str(interaction.guild_id)
@@ -37,6 +41,9 @@ class WickedSettings(commands.Cog):
         await interaction.response.send_message(f"✅ Updates will be posted in {channel.mention} and ping {ping_role.mention}", ephemeral=True)
 
     @app_commands.command(name="add_x_account", description="Add an X (Twitter) account to follow.")
+    @app_commands.describe(username="The X (Twitter) username to track (without @)")
+    @app_commands.guild_install()
+    @app_commands.guild_only()
     @is_admin()
     async def add_x_account(self, interaction: discord.Interaction, username: str):
         guild_id = str(interaction.guild_id)
@@ -50,6 +57,9 @@ class WickedSettings(commands.Cog):
             await interaction.response.send_message(f"⚠️ Already tracking `@{username}`", ephemeral=True)
 
     @app_commands.command(name="remove_x_account", description="Stop tracking an X (Twitter) account.")
+    @app_commands.describe(username="The X (Twitter) username to stop tracking (without @)")
+    @app_commands.guild_install()
+    @app_commands.guild_only()
     @is_admin()
     async def remove_x_account(self, interaction: discord.Interaction, username: str):
         guild_id = str(interaction.guild_id)
