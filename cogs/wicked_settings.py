@@ -16,12 +16,18 @@ def save_settings(settings):
     with open(SETTINGS_FILE, "w") as f:
         json.dump(settings, f, indent=4)
 
+def is_admin():
+    def predicate(interaction: discord.Interaction) -> bool:
+        return interaction.user.guild_permissions.administrator
+    return app_commands.check(predicate)
+
 class WickedSettings(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.settings = load_settings()
 
     @app_commands.command(name="set_wicked_channel", description="Set the Wicked update channel and ping role.")
+    @is_admin()
     async def set_wicked_channel(self, interaction: discord.Interaction, channel: discord.TextChannel, ping_role: discord.Role):
         guild_id = str(interaction.guild_id)
         self.settings[guild_id] = self.settings.get(guild_id, {})
@@ -31,6 +37,7 @@ class WickedSettings(commands.Cog):
         await interaction.response.send_message(f"✅ Updates will be posted in {channel.mention} and ping {ping_role.mention}", ephemeral=True)
 
     @app_commands.command(name="add_x_account", description="Add an X (Twitter) account to follow.")
+    @is_admin()
     async def add_x_account(self, interaction: discord.Interaction, username: str):
         guild_id = str(interaction.guild_id)
         g = self.settings.setdefault(guild_id, {})
@@ -43,6 +50,7 @@ class WickedSettings(commands.Cog):
             await interaction.response.send_message(f"⚠️ Already tracking `@{username}`", ephemeral=True)
 
     @app_commands.command(name="remove_x_account", description="Stop tracking an X (Twitter) account.")
+    @is_admin()
     async def remove_x_account(self, interaction: discord.Interaction, username: str):
         guild_id = str(interaction.guild_id)
         g = self.settings.get(guild_id, {})
